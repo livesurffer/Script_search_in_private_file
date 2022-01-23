@@ -1,0 +1,53 @@
+import openpyxl as op
+from tkinter import *
+from datetime import date
+from tkinter import messagebox
+import pyperclip
+
+
+def clicked():
+    inputText = txt.get()
+    findInExel(inputText)
+    i=2
+    for x in findInExel(inputText):
+        lbl1 = Label(window)
+        lbl1.grid(column=1, row=i)
+        lbl1.configure(text=x)
+        i+=1
+
+
+wb =op.load_workbook(r'L:\Аварии оборудования\Аварии оборудования_2.xlsx')
+
+
+def findInExel(sn):
+    results = []
+    slovar_results={}
+    for sheet in wb:
+        row =2
+        column=5
+        count =1
+        while sheet.cell(row, column).value != None or sheet.cell(row, 1).value != None:
+            if sheet.cell(row, column).value==sn:
+                sa = sheet.cell(row, column).value
+                date = (sheet.cell(row, 1).value).strftime('%Y-%m-%d %H:%M:%S')
+                alarm = sheet.cell(row, 8).value
+                done = sheet.cell(row, 9).value
+                vivod = '{date} --- {alarm} --- {done}'.format(sn=sa, date=date, alarm=alarm, done=done)
+                results.append(vivod)
+                count+=1                
+            row += 1
+    return results
+
+
+window = Tk()
+window.title("Поиск по SN")
+window.geometry('1500x250')
+lbl = Label(window, text="Введи SN")
+lbl.grid(column=0, row=0)
+lbl = Label(window, text="Переключи на EN и удали пробелы")
+lbl.grid(column=0, row=1)
+txt = Entry(window,width=20)
+txt.grid(column=1, row=0)
+btn = Button(window, text="Найти", command =clicked)
+btn.grid(column=2, row=0)
+window.mainloop()
